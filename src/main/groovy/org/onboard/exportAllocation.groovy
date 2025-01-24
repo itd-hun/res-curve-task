@@ -22,7 +22,7 @@ projectName = null
 resourceName = null
 
 def convertToDate(String dateString) {
-    def dateFormat = new SimpleDateFormat('yyyy-MM-dd\'T\'HH:mm:ss')  // Input format with 'T'
+    def dateFormat = new SimpleDateFormat('yyyy-MM-dd\'T\'HH:mm:ss')
     return dateFormat.parse(dateString)
 }
 
@@ -121,33 +121,33 @@ def adjustCalendarForPeriodType(Calendar calendar, String periodType, boolean is
     switch (periodType) {
         case 'monthly':
             if (isEndOfPeriod) {
-                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // End of month
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
             } else {
-                calendar.set(Calendar.DAY_OF_MONTH, 1) // Start of month
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
                 calendar.add(Calendar.MONTH, 1)
             }
             break
         case 'quarterly':
             if (isEndOfPeriod) {
                 calendar.add(Calendar.MONTH, 3)
-                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // End of quarter
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
             } else {
                 calendar.add(Calendar.MONTH, 3)
-                calendar.set(Calendar.DAY_OF_MONTH, 1) // Start of quarter
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
             }
             break
         case 'yearly':
             if (isEndOfPeriod) {
                 calendar.set(Calendar.MONTH, Calendar.DECEMBER)
-                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // End of year
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
             } else {
                 calendar.set(Calendar.MONTH, Calendar.JANUARY)
-                calendar.set(Calendar.DAY_OF_MONTH, 1) // Start of year
+                calendar.set(Calendar.DAY_OF_MONTH, 1)
                 calendar.add(Calendar.YEAR, 1)
             }
             break
         case 'weekly':
-            calendar.add(Calendar.DAY_OF_MONTH, 7) // For weekly, both adjustments are the same
+            calendar.add(Calendar.DAY_OF_MONTH, 7)
             break
         default:
             throw new IllegalArgumentException("Invalid period type: ${periodType}")
