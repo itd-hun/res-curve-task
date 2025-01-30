@@ -50,18 +50,22 @@ def parseSegment(Date date) {
     return sdf.parse(date.toString())
 }
 
+// To count working days
 def countWorkingDays(Date start, Date end) {
     int workingDays = 0
     Calendar calendar = Calendar.getInstance()
     calendar.setTime(start)
 
+    // Adjust start date if it's a weekend (Saturday or Sunday)
     if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
         calendar.add(Calendar.DAY_OF_MONTH, 2)
     } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
         calendar.add(Calendar.DAY_OF_MONTH, 1)
     }
 
+    // Loop through all days between start and end date
     while (!calendar.getTime().after(end)) {
+        // Only count weekdays (Monday to Friday)
         if (calendar.get(Calendar.DAY_OF_WEEK) >= Calendar.MONDAY && calendar.get(Calendar.DAY_OF_WEEK) <= Calendar.FRIDAY) {
             workingDays++
         }
@@ -70,6 +74,7 @@ def countWorkingDays(Date start, Date end) {
     return workingDays
 }
 
+// Function to calculate total working days across multiple periods and segments based on FTE rate
 def calculateWorkingDaysInPeriods(periods, segments) {
     def result = []
 
@@ -91,16 +96,17 @@ def calculateWorkingDaysInPeriods(periods, segments) {
 
             if (!overlapStart.after(overlapEnd)) {
                 def overlapWorkingDays = countWorkingDays(overlapStart, overlapEnd)
-                totalWorkingDays += overlapWorkingDays
+
+                def actualDaysWorked = overlapWorkingDays * segment.rate as int
+                totalWorkingDays += actualDaysWorked
             }
         }
 
-        result.add([start: period.start, end: period.end, workingDays: totalWorkingDays])
+        result.add([start: period.start, end: period.end, workingDays: totalWorkingDays as int])
     }
 
     return result
 }
-
 def getProjectDuration(Sql sql) {
 
     def query = """
@@ -336,6 +342,10 @@ def runScript() {
 
     def softCurve = readCurveData(curves["PRALLOCCURVE"])
     def hardCurve = readCurveData(curves["HARD_CURVE"])
+
+    if(hardCurve == null){
+        hardCurve = new NkCurve(1)
+    }
 
     NkCurve softCurveClone = softCurve.clone() as NkCurve
     NkCurve hardCurveClone = hardCurve.clone() as NkCurve
